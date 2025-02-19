@@ -3,11 +3,11 @@
 ### 1. Создание файла окружения 
 Создайте файл `.env` в папке `electronic_journal` с следующими данными.  
 Пример данных:  
-DB_USER=postgres  
-DB_PASSWORD=4342  
-DB_HOST=db  
-DB_PORT=5432  
-DB_NAME=electronic_journal
+POSTGRES_HOST=db
+POSTGRES_PORT=5432
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=4342
+POSTGRES_DB=scheduler
 
 ### 2. Установка зависимостей:
 

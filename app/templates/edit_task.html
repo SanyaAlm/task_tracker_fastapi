@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Edit Task</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <h1 class="text-center mb-4">Edit Task</h1>
+
+    <form id="edit-form" class="row g-3">
+        <input type="hidden" id="task-id">
+        <div class="col-md-12">
+            <p>Name:</p>
+            <input type="text" id="edit-name" class="form-control" required>
+        </div>
+        <div class="col-md-12">
+            <p>Description:</p>
+            <input type="text" id="edit-desc" class="form-control">
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-success">Update</button>
+            <a href="/" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", async function () {
+    let taskId = "{{ task_id }}";
+    let response = await fetch(`/api/task/${taskId}`);
+    let task = await response.json();
+
+    document.getElementById("task-id").value = task.id;
+    document.getElementById("edit-name").value = task.name;
+    document.getElementById("edit-desc").value = task.description;
+
+    document.getElementById("edit-form").addEventListener("submit", async function (e) {
+        e.preventDefault();
+        await updateTask(taskId);
+    });
+});
+
+async function updateTask(id) {
+    let name = document.getElementById("edit-name").value;
+    let description = document.getElementById("edit-desc").value;
+
+    await fetch(`/api/task/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, description })
+    });
+
+    window.location.href = "/";
+}
+</script>
+</body>
+</html>

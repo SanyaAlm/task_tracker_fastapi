@@ -28,3 +28,4 @@ docker compose up -d --build
 ```
 ### 4. Доступ к API
 API эндпоинты будут доступны по адресу: (http://localhost:8001/docs)
+Главная страница будет доступна на http://localhost:8001/

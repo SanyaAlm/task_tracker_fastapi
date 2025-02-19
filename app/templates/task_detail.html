@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Task Detail</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <h1 class="text-center my-4">Task Details</h1>
+
+    <div class="card">
+        <div class="card-body">
+            <h3 id="task-name"></h3>
+            <p id="task-desc"></p>
+            <a href="/" class="btn btn-secondary">Back</a>
+            <a id="edit-link" class="btn btn-warning">Edit</a>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", async function () {
+    let taskId = "{{ task_id }}";
+    let response = await fetch(`/api/task/${taskId}`);
+
+    if (response.ok) {
+        let task = await response.json();
+        document.getElementById("task-name").innerText = task.name;
+        document.getElementById("task-desc").innerText = task.description;
+        document.getElementById("edit-link").href = `/task/edit/${task.id}`;
+    } else {
+        document.querySelector(".container").innerHTML = "<h3 class='text-center text-danger'>Task not found</h3>";
+    }
+});
+</script>
+</body>
+</html>

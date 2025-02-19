@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Task Tracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <h1 class="text-center mb-4">Task Tracker</h1>
+
+    <form id="task-form" class="row g-3">
+        <div class="col-md-5">
+            <input type="text" id="task-name" class="form-control" placeholder="Task name" required>
+        </div>
+        <div class="col-md-5">
+            <input type="text" id="task-desc" class="form-control" placeholder="Description">
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Add Task</button>
+        </div>
+    </form>
+
+    <ul id="task-list" class="list-group mt-3">
+    </ul>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    loadTasks();
+
+    document.getElementById("task-form").addEventListener("submit", async function (e) {
+        e.preventDefault();
+        await createTask();
+    });
+});
+
+async function loadTasks() {
+    let response = await fetch("/api/tasks");  // Загружаем задачи
+    let tasks = await response.json();
+    let taskList = document.getElementById("task-list");
+    taskList.innerHTML = "";  // Очищаем список перед перерисовкой
+
+    tasks.forEach(task => {
+        let li = document.createElement("li");
+        li.className = "list-group-item d-flex justify-content-between align-items-center mt-2";
+        li.dataset.id = task.id;
+        li.innerHTML = `
+            <div>
+                <strong>${task.name}</strong> - ${task.description}
+            </div>
+            <div>
+                <button class="btn btn-sm btn-danger me-2" onclick="deleteTask(${task.id})">Delete</button>
+                  <a href="/task/${task.id}" class="btn btn-sm btn-info me-2">View</a>
+                <a href="/task/edit/${task.id}" class="btn btn-sm btn-warning">Edit</a>
+            </div>
+        `;
+        taskList.appendChild(li);
+    });
+}
+
+async function createTask() {
+    let name = document.getElementById("task-name").value;
+    let description = document.getElementById("task-desc").value;
+
+    let response = await fetch("/api/tasks/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, description })
+    });
+
+    if (response.ok) {
+        loadTasks();  // Обновляем список задач
+        document.getElementById("task-form").reset();
+    }
+}
+
+async function deleteTask(id) {
+    await fetch(`/api/tasks/${id}/`, { method: "DELETE" });
+    loadTasks();
+}
+
+async function editTask(id) {
+    let newName = prompt("Enter new task name:");
+    let newDesc = prompt("Enter new description:");
+
+    if (newName !== null) {
+        await fetch(`/task/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: newName, description: newDesc })
+        });
+        loadTasks();
+    }
+}
+</script>
+</body>
+</html>
